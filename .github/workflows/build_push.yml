@@ -27,18 +27,12 @@ jobs:
       - name: Build xnxx extension
         run: ./gradlew :src:all:xnxx:assembleDebug
 
-      - name: Prepare repo output
-        run: |
-          mkdir -p repo_out/apk repo_out/icon
-          cp src/all/xnxx/build/outputs/apk/debug/*.apk repo_out/apk/
-          cp src/all/xnxx/res/mipmap-xxhdpi/*.png repo_out/icon/ 2>/dev/null || true
-
       - name: Generate index.min.json
         run: |
-          pip install protobuf
-          mkdir -p apk-artifacts
-          cp repo_out/apk/*.apk apk-artifacts/
-          mkdir -p repo
+          pip install --upgrade --break-system-packages "protobuf>=5.26.0,<7.35.1"
+          mkdir -p apk-artifacts repo
+          find src/all/xnxx/build -name "*.apk" -exec cp {} apk-artifacts/ \;
+          find src/all/xnxx/build -name "keiyoushi-source-info.json" -exec cp {} apk-artifacts/ \;
           python ./.github/scripts/publish-repo.py "false" "true"
 
       - name: Push to repo branch
