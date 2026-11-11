@@ -33,7 +33,7 @@ jobs:
           mkdir -p apk-artifacts repo
           find src/all/xnxx/build -name "*.apk" -exec cp {} apk-artifacts/ \;
           find src/all/xnxx/build -name "keiyoushi-source-info.json" -exec cp {} apk-artifacts/ \;
-          python ./.github/scripts/publish-repo.py "false" "true"
+          python ./.github/scripts/publish-repo.py "[]" "true"
 
       - name: Push to repo branch
         uses: peaceiris/actions-gh-pages@v4
