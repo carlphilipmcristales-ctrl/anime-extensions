@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -27,13 +25,36 @@ jobs:
       - name: Build xnxx extension
         run: ./gradlew :src:all:xnxx:assembleDebug
 
-      - name: Generate index.min.json
+      - name: Package repo files
         run: |
-          pip install --upgrade --break-system-packages "protobuf>=7.35.1"
-          mkdir -p apk-artifacts repo
-          find src/all/xnxx/build -name "*.apk" -exec cp {} apk-artifacts/ \;
-          find src/all/xnxx/build -name "keiyoushi-source-info.json" -exec cp {} apk-artifacts/ \;
-          python ./.github/scripts/publish-repo.py "[]" "true"
+          mkdir -p repo/apk repo/icon
+          APK_FILE=$(find src/all/xnxx/build -name "*.apk" | head -n 1)
+          APK_NAME=$(basename "$APK_FILE")
+          cp "$APK_FILE" "repo/apk/$APK_NAME"
+          ICON_FILE=$(find src/all/xnxx/res -name "ic_launcher.png" | tail -n 1)
+          if [ -n "$ICON_FILE" ]; then
+            cp "$ICON_FILE" "repo/icon/eu.kanade.tachiyomi.animeextension.all.xnxx.png"
+          fi
+          python3 -c "
+          import json
+          data = [{
+              'name': 'Aniyomi: XNXX',
+              'pkg': 'eu.kanade.tachiyomi.animeextension.all.xnxx',
+              'apk': '$APK_NAME',
+              'lang': 'all',
+              'code': 5,
+              'version': '14.5',
+              'nsfw': 1,
+              'sources': [{
+                  'name': 'XNXX',
+                  'lang': 'all',
+                  'id': '6355427640238282940',
+                  'baseUrl': 'https://xnxx.xxx'
+              }]
+          }]
+          with open('repo/index.min.json', 'w') as f:
+              json.dump(data, f)
+          "
 
       - name: Push to repo branch
         uses: peaceiris/actions-gh-pages@v4
