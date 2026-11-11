@@ -12,6 +12,6 @@ yuzono {
 
     source {
         lang = "all"
-        baseUrl = "https://www.xnxx.com"
+        baseUrl = "https://www.xnxx.xxx"
     }
 }
