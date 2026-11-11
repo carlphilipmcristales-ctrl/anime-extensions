@@ -29,7 +29,7 @@ jobs:
 
       - name: Generate index.min.json
         run: |
-          pip install --upgrade --break-system-packages "protobuf>=5.26.0,<7.35.1"
+          pip install --upgrade --break-system-packages "protobuf>=7.35.1"
           mkdir -p apk-artifacts repo
           find src/all/xnxx/build -name "*.apk" -exec cp {} apk-artifacts/ \;
           find src/all/xnxx/build -name "keiyoushi-source-info.json" -exec cp {} apk-artifacts/ \;
